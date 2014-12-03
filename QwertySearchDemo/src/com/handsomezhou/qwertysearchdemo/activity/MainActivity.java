@@ -141,7 +141,7 @@ public class MainActivity extends Activity implements OnContactsLoad{
 		hideView(mLoadContactsView);
 		updateContactsList();
 		
-		int contactsCount=ContactsHelper.getInstance().getBaseContacts().size();
+	/*	int contactsCount=ContactsHelper.getInstance().getBaseContacts().size();
 		for(int i=0; i<contactsCount; i++){
 			String name=ContactsHelper.getInstance().getBaseContacts().get(i).getName();
 			Log.i(TAG,"++++++++++++++++++++++++++++++:["+name+"]"+"++++++++++++++++++++++++++++++");
@@ -157,9 +157,7 @@ public class MainActivity extends Activity implements OnContactsLoad{
 				}
 				
 			}
-			
-			
-		}
+		}*/
 	}
 
 	@Override

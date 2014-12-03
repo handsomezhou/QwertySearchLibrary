@@ -29,9 +29,11 @@ public class PinyinUtil {
 			format = new HanyuPinyinOutputFormat();
 		}
 		
+		String chineseStr=chineseString.toLowerCase();
+		
 		format.setToneType(HanyuPinyinToneType.WITHOUT_TONE);
 
-		int chineseStringLength = chineseString.length();
+		int chineseStringLength = chineseStr.length();
 		StringBuffer nonPinyinString = new StringBuffer();
 		PinyinUnit pyUnit = null;
 		String[] pinyinStr = null;
@@ -39,7 +41,7 @@ public class PinyinUtil {
 		int startPosition=-1;
 
 		for (int i = 0; i < chineseStringLength; i++) {
-			char ch = chineseString.charAt(i);
+			char ch = chineseStr.charAt(i);
 			try {
 				pinyinStr = PinyinHelper.toHanyuPinyinStringArray(ch,format);
 			} catch (BadHanyuPinyinOutputFormatCombination e) {
