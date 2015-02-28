@@ -2,6 +2,7 @@ package com.handsomezhou.qwertysearchdemo.util;
 
 import android.text.Html;
 import android.text.Spanned;
+import android.view.View;
 import android.widget.TextView;
 
 public class ViewUtil {
@@ -32,13 +33,56 @@ public class ViewUtil {
 		
 		int len=highlightText.length();
 		/**
-		 *  "<u><font color=#FF0000 >"+str+"</font></u>"; 	//with underline
-		 *  "<font color=#FF0000 >"+str+"</font>";			//without underline
+		 *  "<u><font color=#FF8C00 >"+str+"</font></u>"; 	//with underline
+		 *  "<font color=#FF8C00 >"+str+"</font>";			//without underline
+		 *  
+		 *  <color name="dark_orange">#FF8C00</color>
 		 */
-		Spanned spanned=Html.fromHtml(baseText.substring(0, index)+"<font color=#FF0000 >" 
+		Spanned spanned=Html.fromHtml(baseText.substring(0, index)+"<font color=#FF8C00 >" 
                 + baseText.substring(index, index + len) + "</font>" 
                 + baseText.substring(index + len, baseText.length()));
 		
 		tv.setText(spanned);
 	}
+	
+	public static int getViewVisibility(View view) {
+		if (null == view) {
+			return View.GONE;
+		}
+
+		return view.getVisibility();
+	}
+
+	public static void showView(View view) {
+		if (null == view) {
+			return;
+		}
+
+		if (View.VISIBLE != view.getVisibility()) {
+			view.setVisibility(View.VISIBLE);
+		}
+	}
+	
+	public static void invisibleView(View view) {
+		if (null == view) {
+			return;
+		}
+		if (View.INVISIBLE != view.getVisibility()) {
+			view.setVisibility(View.INVISIBLE);
+		}
+
+		return;
+	}
+	
+	public static void hideView(View view) {
+		if (null == view) {
+			return;
+		}
+		if (View.GONE != view.getVisibility()) {
+			view.setVisibility(View.GONE);
+		}
+
+		return;
+	}
+
 }
