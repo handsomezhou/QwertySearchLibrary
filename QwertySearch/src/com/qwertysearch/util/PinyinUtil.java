@@ -17,13 +17,17 @@
 package com.qwertysearch.util;
 
 import java.util.List;
+
 import net.sourceforge.pinyin4j.PinyinHelper;
 import net.sourceforge.pinyin4j.format.HanyuPinyinOutputFormat;
 import net.sourceforge.pinyin4j.format.HanyuPinyinToneType;
 import net.sourceforge.pinyin4j.format.exception.BadHanyuPinyinOutputFormatCombination;
 import android.annotation.SuppressLint;
-import com.qwertysearch.model.PinyinUnit;
+import android.text.TextUtils;
+
 import com.qwertysearch.model.PinyinBaseUnit;
+import com.qwertysearch.model.PinyinSearchUnit;
+import com.qwertysearch.model.PinyinUnit;
 
 @SuppressLint("DefaultLocale")
 public class PinyinUtil {
@@ -31,183 +35,200 @@ public class PinyinUtil {
 	private static HanyuPinyinOutputFormat format = new HanyuPinyinOutputFormat();
 
 	/**
-	 * Convert from Chinese string to a series of PinyinUnit
-	 * 
-	 * @param chineseString
-	 * @param pinyinUnit
-	 */
-	public static void chineseStringToPinyinUnit(String chineseString,List<PinyinUnit> pinyinUnit) {
-		if ((null == chineseString) || (null == pinyinUnit)) {
-			return;
-		}
+     * Convert from base data to a series of PinyinUnit
+     * 
+     * @param pinyinSearchUnit
+     */
+    public static void parse(PinyinSearchUnit pinyinSearchUnit) {
+        if ((null==pinyinSearchUnit)||(TextUtils.isEmpty(pinyinSearchUnit.getBaseData()))||(null==pinyinSearchUnit.getPinyinUnits())) {
+            return;
+        }
 
-		String chineseStr = chineseString.toLowerCase();
+        String chineseStr = pinyinSearchUnit.getBaseData().toLowerCase();
 
-		if (null == format) {
-			format = new HanyuPinyinOutputFormat();
-		}
+        if (null == format) {
+            format = new HanyuPinyinOutputFormat();
+        }
 
-		format.setToneType(HanyuPinyinToneType.WITHOUT_TONE);
+        format.setToneType(HanyuPinyinToneType.WITHOUT_TONE);
 
-		int chineseStringLength = chineseStr.length();
-		StringBuffer nonPinyinString = new StringBuffer();
-		PinyinUnit pyUnit = null;
-		String originalString = null;
-		String[] pinyinStr = null;
-		boolean lastChineseCharacters = true;
-		int startPosition = -1;
+        int chineseStringLength = chineseStr.length();
+        StringBuffer nonPinyinString = new StringBuffer();
+        PinyinUnit pyUnit = null;
+        String originalString = null;
+        String[] pinyinStr = null;
+        boolean lastChineseCharacters = true;
+        int startPosition = -1;
 
-		for (int i = 0; i < chineseStringLength; i++) {
-			char ch = chineseStr.charAt(i);
-			try {
-				pinyinStr = PinyinHelper.toHanyuPinyinStringArray(ch, format);
-			} catch (BadHanyuPinyinOutputFormatCombination e) {
+        for (int i = 0; i < chineseStringLength; i++) {
+            char ch = chineseStr.charAt(i);
+            try {
+                pinyinStr = PinyinHelper.toHanyuPinyinStringArray(ch, format);
+            } catch (BadHanyuPinyinOutputFormatCombination e) {
 
-				e.printStackTrace();
-			}
+                e.printStackTrace();
+            }
 
-			if (null == pinyinStr) {
-				if (true == lastChineseCharacters) {
-					pyUnit = new PinyinUnit();
-					lastChineseCharacters = false;
-					startPosition = i;
-					nonPinyinString.delete(0, nonPinyinString.length());
-				}
-				nonPinyinString.append(ch);
-			} else {
-				if (false == lastChineseCharacters) {
-					// add continuous non-kanji characters to PinyinUnit
-					originalString = nonPinyinString.toString();
-					String[] str = { nonPinyinString.toString() };
-					addPinyinUnit(pinyinUnit, pyUnit, false, originalString,str, startPosition);
-					nonPinyinString.delete(0, nonPinyinString.length());
-					lastChineseCharacters = true;
-				}
-				// add single Chinese characters Pinyin(include Multiple Pinyin)
-				// to PinyinUnit
-				pyUnit = new PinyinUnit();
-				startPosition = i;
-				originalString = String.valueOf(ch);
-				addPinyinUnit(pinyinUnit, pyUnit, true, originalString,pinyinStr, startPosition);
+            if (null == pinyinStr) {
+                if (true == lastChineseCharacters) {
+                    pyUnit = new PinyinUnit();
+                    lastChineseCharacters = false;
+                    startPosition = i;
+                    nonPinyinString.delete(0, nonPinyinString.length());
+                }
+                nonPinyinString.append(ch);
+            } else {
+                if (false == lastChineseCharacters) {
+                    // add continuous non-kanji characters to PinyinUnit
+                    originalString = nonPinyinString.toString();
+                    String[] str = { nonPinyinString.toString() };
+                    addPinyinUnit(pinyinSearchUnit.getPinyinUnits(), pyUnit, false, originalString,str, startPosition);
+                    nonPinyinString.delete(0, nonPinyinString.length());
+                    lastChineseCharacters = true;
+                }
+                // add single Chinese characters Pinyin(include Multiple Pinyin)
+                // to PinyinUnit
+                pyUnit = new PinyinUnit();
+                startPosition = i;
+                originalString = String.valueOf(ch);
+                addPinyinUnit(pinyinSearchUnit.getPinyinUnits(), pyUnit, true, originalString,pinyinStr, startPosition);
 
-			}
-		}
+            }
+        }
 
-		if (false == lastChineseCharacters) {
-			// add continuous non-kanji characters to PinyinUnit
-			originalString = nonPinyinString.toString();
-			String[] str = { nonPinyinString.toString() };
-			addPinyinUnit(pinyinUnit, pyUnit, false, originalString, str,startPosition);
-			nonPinyinString.delete(0, nonPinyinString.length());
-			lastChineseCharacters = true;
-		}
+        if (false == lastChineseCharacters) {
+            // add continuous non-kanji characters to PinyinUnit
+            originalString = nonPinyinString.toString();
+            String[] str = { nonPinyinString.toString() };
+            addPinyinUnit(pinyinSearchUnit.getPinyinUnits(), pyUnit, false, originalString, str,startPosition);
+            nonPinyinString.delete(0, nonPinyinString.length());
+            lastChineseCharacters = true;
+        }
 
-	}
+    }
 
-	/**
-	 * get the first letter from original string
-	 * 
-	 * @param pinyinUnit
-	 * @return return the first letter of original string,otherwise return null.
-	 */
-	public static String getFirstLetter(List<PinyinUnit> pinyinUnit) {
-		do {
-			if (null == pinyinUnit || pinyinUnit.size() <= 0) {
-				break;
-			}
+    /**
+     * get the first letter from original string
+     * 
+     * @param pinyinSearchUnit
+     * @return return the first letter of original string,otherwise return null.
+     */
+    public static String getFirstLetter(PinyinSearchUnit pinyinSearchUnit) {
+        do {
+            if(null==pinyinSearchUnit){
+                break;
+            }
+            
+            List<PinyinUnit> pinyinUnit=pinyinSearchUnit.getPinyinUnits();
+            if (null == pinyinUnit || pinyinUnit.size() <= 0) {
+                break;
+            }
 
-			List<PinyinBaseUnit> pinyinBaseUnit = pinyinUnit.get(0).getPinyinBaseUnitIndex();
-			if (null == pinyinBaseUnit || pinyinBaseUnit.size() <= 0) {
-				break;
-			}
+            List<PinyinBaseUnit> pinyinBaseUnit = pinyinUnit.get(0).getPinyinBaseUnitIndex();
+            if (null == pinyinBaseUnit || pinyinBaseUnit.size() <= 0) {
+                break;
+            }
 
-			String pinyin = pinyinBaseUnit.get(0).getPinyin();
-			if (null == pinyin || pinyin.length() <= 0) {
-				break;
-			}
+            String pinyin = pinyinBaseUnit.get(0).getPinyin();
+            if (null == pinyin || pinyin.length() <= 0) {
+                break;
+            }
 
-			return String.valueOf(pinyin.charAt(0));
+            return String.valueOf(pinyin.charAt(0));
 
-		} while (false);
+        } while (false);
 
-		return null;
-	}
+        return null;
+    }
 
-	/**
-	 * get the first character from original string
-	 * 
-	 * @param pinyinUnit
-	 * @return return the first character of original string,otherwise return
-	 *         null.
-	 */
-	public static String getFirstCharacter(List<PinyinUnit> pinyinUnit) {
-		do {
-			if (null == pinyinUnit || pinyinUnit.size() <= 0) {
-				break;
-			}
 
-			List<PinyinBaseUnit> pinyinBaseUnit = pinyinUnit.get(0).getPinyinBaseUnitIndex();
-			if (null == pinyinBaseUnit || pinyinBaseUnit.size() <= 0) {
-				break;
-			}
+    /**
+     * get the first character from original string
+     * 
+     * @param pinyinSearchUnit
+     * @return return the first character of original string,otherwise return null.
+     */
+    public static String getFirstCharacter(PinyinSearchUnit pinyinSearchUnit) {
+        
+        
+        do {
+            if(null==pinyinSearchUnit){
+                break;
+            }
+            
+            List<PinyinUnit> pinyinUnit=pinyinSearchUnit.getPinyinUnits();
+            if (null == pinyinUnit || pinyinUnit.size() <= 0) {
+                break;
+            }
 
-			String originalString = pinyinBaseUnit.get(0).getOriginalString();
-			if (null == originalString || originalString.length() <= 0) {
-				break;
-			}
+            List<PinyinBaseUnit> pinyinBaseUnit = pinyinUnit.get(0).getPinyinBaseUnitIndex();
+            if (null == pinyinBaseUnit || pinyinBaseUnit.size() <= 0) {
+                break;
+            }
 
-			return String.valueOf(originalString.charAt(0));
+            String originalString = pinyinBaseUnit.get(0).getOriginalString();
+            if (null == originalString || originalString.length() <= 0) {
+                break;
+            }
 
-		} while (false);
+            return String.valueOf(originalString.charAt(0));
 
-		return null;
-	}
-	
-	/**
-	 * get sort key, as sort keyword
-	 * @param pinyinUnit
-	 * @return return sort key,otherwise return null.
-	 */
-	public static String getSortKey(List<PinyinUnit> pinyinUnit) {
-		StringBuffer sortKeyBuffer=new StringBuffer();
-		sortKeyBuffer.delete(0, sortKeyBuffer.length());
-		String splitSymbol=" ";
-		do {
-			if ((null == pinyinUnit) || (pinyinUnit.size() <= 0)) {
-				break;
-			}
-			
-			for(PinyinUnit pu:pinyinUnit){
-				if(pu.isPinyin()){
-					sortKeyBuffer.append(pu.getPinyinBaseUnitIndex().get(0).getPinyin()).append(splitSymbol);
-					sortKeyBuffer.append(pu.getPinyinBaseUnitIndex().get(0).getOriginalString()).append(splitSymbol);
-				}else{
-					sortKeyBuffer.append(pu.getPinyinBaseUnitIndex().get(0).getOriginalString()).append(splitSymbol);
-				}
-			}
-			
-			return sortKeyBuffer.toString();
-		} while (false);
+        } while (false);
 
-		return null;
-	}
+        return null;
+    }
+    
+    /**
+     * get sort key, as sort keyword
+     * 
+     * @param pinyinSearchUnit
+     * @return return sort key,otherwise return null.
+     */
+    public static String getSortKey(PinyinSearchUnit pinyinSearchUnit) {
+        StringBuffer sortKeyBuffer=new StringBuffer();
+        sortKeyBuffer.delete(0, sortKeyBuffer.length());
+        String splitSymbol=" ";
+        do {
+            if(null==pinyinSearchUnit){
+                break;
+            }
+            List<PinyinUnit> pinyinUnit=pinyinSearchUnit.getPinyinUnits();
+            if ((null == pinyinUnit) || (pinyinUnit.size() <= 0)) {
+                break;
+            }
+            
+            for(PinyinUnit pu:pinyinUnit){
+                if(pu.isPinyin()){
+                    sortKeyBuffer.append(pu.getPinyinBaseUnitIndex().get(0).getPinyin()).append(splitSymbol);
+                    sortKeyBuffer.append(pu.getPinyinBaseUnitIndex().get(0).getOriginalString()).append(splitSymbol);
+                }else{
+                    sortKeyBuffer.append(pu.getPinyinBaseUnitIndex().get(0).getOriginalString()).append(splitSymbol);
+                }
+            }
+            
+            return sortKeyBuffer.toString();
+        } while (false);
 
-	/**
-	 * judge chr is kanji
-	 * @param chr
-	 * @return Is kanji return true,otherwise return false.
-	 */
-	public static boolean isKanji(char chr){
-		String[] pinyinStr = null;
-		try {
-			pinyinStr = PinyinHelper.toHanyuPinyinStringArray(chr, format);
-		} catch (BadHanyuPinyinOutputFormatCombination e) {
-			e.printStackTrace();
-		}
-		
-		return (null==pinyinStr)?(false):(true);
-	}
-	
+        return null;
+    }
+
+    /**
+     * judge chr is kanji
+     * 
+     * @param chr
+     * @return Is kanji return true,otherwise return false.
+     */
+    public static boolean isKanji(char chr){
+        String[] pinyinStr = null;
+        try {
+            pinyinStr = PinyinHelper.toHanyuPinyinStringArray(chr, format);
+        } catch (BadHanyuPinyinOutputFormatCombination e) {
+            e.printStackTrace();
+        }
+        
+        return (null==pinyinStr)?(false):(true);
+    }
+
 	private static void addPinyinUnit(List<PinyinUnit> pinyinUnit,PinyinUnit pyUnit, boolean pinyin, String originalString,String[] string, int startPosition) {
 		if ((null == pinyinUnit) || (null == pyUnit)
 				|| (null == originalString) || (null == string)) {
@@ -272,18 +293,6 @@ public class PinyinUtil {
 
 		pinyinBaseUnit.setOriginalString(new String(originalString));
 		pinyinBaseUnit.setPinyin(new String(pinyin));
-		int pinyinLength = pinyin.length();
-		StringBuffer numBuffer = new StringBuffer();
-		numBuffer.delete(0, numBuffer.length());
-
-		for (int i = 0; i < pinyinLength; i++) {
-			char ch = T9Util.getT9Number(pinyin.charAt(i));
-			numBuffer.append(ch);
-		}
-
-		pinyinBaseUnit.setNumber(new String(numBuffer.toString()));
-		numBuffer.delete(0, numBuffer.length());
-
 		return;
 	}
 }

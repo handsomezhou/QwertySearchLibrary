@@ -22,20 +22,20 @@ package com.qwertysearch.model;
  *  "???hao" 	===>mOriginalString="???hao"; mPinyin="???hao";mNumber="???426"; 
  *  "周"			===>mOriginalString="周"; mPinyin="zhou";mNumber="9468";
  */
-public class PinyinBaseUnit {
-	private String mOriginalString;
+public class PinyinBaseUnit implements Cloneable{
+    private String mOriginalString;
 	private String mPinyin;
-	private String mNumber;
+	//private String mNumber;
 	
 	public PinyinBaseUnit(){
 		
 	}
 	
-	public PinyinBaseUnit(String originalString,String pinyin, String number) {
+	public PinyinBaseUnit(String originalString,String pinyin) {
 		super();
 		mOriginalString=originalString;
 		mPinyin = pinyin;
-		mNumber = number;
+		
 	}
 	
 	public String getOriginalString() {
@@ -54,11 +54,10 @@ public class PinyinBaseUnit {
 		mPinyin = pinyin;
 	}
 	
-	public String getNumber() {
-		return mNumber;
-	}
-	
-	public void setNumber(String number) {
-		mNumber = number;
-	}
+    @Override
+    public Object clone() throws CloneNotSupportedException {
+        // TODO Auto-generated method stub
+        return super.clone();
+    }
+
 }
