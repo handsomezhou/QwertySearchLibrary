@@ -3,13 +3,24 @@ QwertySearchLibrary
 	The library of QwertySearch,a Java Library Which provide data analysis methods, 
 	data matching method and so on for Qwerty pinyin search.
 
-Related introduction
+	QwertySearch = PinyinSearch - T9Search
+	
+**If you're looking for other versions search project, you can find all of them at the following links:**
+
+Java(Android):
+[PinyinSearch](https://github.com/handsomezhou/PinyinSearchLibrary)
+[T9Search](https://github.com/handsomezhou/T9SearchLibrary)
+[QwertySearch](https://github.com/handsomezhou/QwertySearchLibrary)
+
+	
+Features
 ---------------
-1.[Android Pinyin search contacts analysis and implementation](http://blog.csdn.net/zjqyjg/article/details/41360769)
-
-2.[Android T9 search contacts analysis and implementation](http://blog.csdn.net/zjqyjg/article/details/41182911)
-
-3.[Android Qwerty search contacts analysis and implementation](http://blog.csdn.net/zjqyjg/article/details/41318907)
+ * Support Qwerty search
+ * Support Chinese character search
+ * Support Pinyin search
+ * Support English search
+ * Support polyphone search
+ * Support highlight
 
 Depend
 ---------------
@@ -25,33 +36,34 @@ API
 	converted to Pinyin characters.
 	
 ### Function:
-	public static void chineseStringToPinyinUnit(String chineseString,List<PinyinUnit> pinyinUnit);
-	public static boolean matchPinyinUnits(final List<PinyinUnit> pinyinUnits,
-	final String baseData, String search,StringBuffer chineseKeyWord);
-	public static String getSortKey(List<PinyinUnit> pinyinUnit)
-	public static String getFirstLetter(List<PinyinUnit> pinyinUnit);
-	public static String getFirstCharacter(List<PinyinUnit> pinyinUnit);
-	public static boolean isKanji(char chr)
+	public static void parse(PinyinSearchUnit pinyinSearchUnit);
+	public static boolean match(PinyinSearchUnit pinyinSearchUnit,String search);
+	public static String getSortKey(PinyinSearchUnit pinyinSearchUnit);
+	public static String getFirstLetter(PinyinSearchUnit pinyinSearchUnit);
+	public static String getFirstCharacter(PinyinSearchUnit pinyinSearchUnit);
+	public static boolean isKanji(char chr);
 
 ### Function call:
-	PinyinUtil.chineseStringToPinyinUnit(...);
-	QwertyMatchPinyinUnits.matchPinyinUnits(...);
+	PinyinUtil.parse(...);
+	QwertyUtil.match(...);
 	PinyinUtil.getSortKey(...);
+	PinyinUtil.getFirstLetter(...);
 	PinyinUtil.getFirstCharacter(...);
-	PinyinUtil.getFirstLetter();
 	PinyinUtil.isKanji(...);
 	
-Using
+Usage
 ---------------	
-### Qwerty search similar demo:
-<img src="https://github.com/handsomezhou/PinyinSearchLibrary/blob/master/external_res/image/Qwerty_search.png" />
-	
 ### Function call in detail:
-	Import packages when use qwertysearch Library(Dependent on pinyin4j-x.x.x.jar):
+	Import packages when use qwertySearch Library(Dependent on pinyin4j-x.x.x.jar):
 	import com.qwertySearch.util.*;
 	import com.qwertySearch.model.*;
 	
-	Reference QwertySearchDemo Project.
+	The first step:  Data parsing  (ps:Must init baseData of PinyinSearchUnit before parse)
+	    * (PinyinUtil.parse(...))
+    The second step: Data matching 
+	    * (QwertyUtil.match(...))
+	
+	For details, please see project QwertySearchDemo.
 	
 License 
 ---------------
