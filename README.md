@@ -55,8 +55,8 @@ Usage
 ---------------	
 ### Function call in detail:
 	Import packages when use qwertySearch Library(Dependent on pinyin4j-x.x.x.jar):
-	import com.qwertySearch.util.*;
-	import com.qwertySearch.model.*;
+	import com.qwertysearch.util.*;
+	import com.qwertysearch.model.*;
 	
 	The first step:  Data parsing  (ps:Must init baseData of PinyinSearchUnit before parse)
 	    * (PinyinUtil.parse(...))
