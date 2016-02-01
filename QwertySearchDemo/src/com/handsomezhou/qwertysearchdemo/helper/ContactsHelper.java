@@ -1,4 +1,4 @@
-package com.handsomezhou.qwertysearchdemo.util;
+package com.handsomezhou.qwertysearchdemo.helper;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -13,7 +13,7 @@ import android.os.Handler;
 import android.provider.ContactsContract;
 import android.util.Log;
 
-import com.handsomezhou.qwertysearchdemo.main.QwertySearchApplication;
+import com.handsomezhou.qwertysearchdemo.application.QwertySearchApplication;
 import com.handsomezhou.qwertysearchdemo.model.Contacts;
 import com.handsomezhou.qwertysearchdemo.model.Contacts.SearchByType;
 import com.qwertysearch.util.*;
@@ -109,7 +109,7 @@ public class ContactsHelper {
 	 * @return start load success return true, otherwise return false
 	 */
 	public boolean startLoadContacts() {
-		if (true == isSearching()) {
+		if (true == isLoading()) {
 			return false;
 		}
 		
@@ -140,11 +140,11 @@ public class ContactsHelper {
 	
 	/**
 	 * @description search base data according to string parameter
-	 * @param search 
+	 * @param keyword 
 	 * @return void
 	 */
-	public void parseQwertyInputSearchContacts(String search){
-		if(null==search){//add all base data to search
+	public void qwertySearch(String keyword){
+		if(null==keyword){//add all base data to search
 			if(null!=mSearchContacts){
 				mSearchContacts.clear();
 			}else{
@@ -163,11 +163,11 @@ public class ContactsHelper {
 		}
 		
 		if(mFirstNoSearchResultInput.length()>0){
-			if(search.contains(mFirstNoSearchResultInput.toString())){
-				Log.i(TAG,"no need  to search,null!=search,mFirstNoSearchResultInput.length()="+mFirstNoSearchResultInput.length()+"["+mFirstNoSearchResultInput.toString()+"]"+";searchlen="+search.length()+"["+search+"]");
+			if(keyword.contains(mFirstNoSearchResultInput.toString())){
+				Log.i(TAG,"no need  to search,null!=search,mFirstNoSearchResultInput.length()="+mFirstNoSearchResultInput.length()+"["+mFirstNoSearchResultInput.toString()+"]"+";searchlen="+keyword.length()+"["+keyword+"]");
 				return;
 			}else{
-				Log.i(TAG,"delete  mFirstNoSearchResultInput, null!=search,mFirstNoSearchResultInput.length()="+mFirstNoSearchResultInput.length()+"["+mFirstNoSearchResultInput.toString()+"]"+";searchlen="+search.length()+"["+search+"]");
+				Log.i(TAG,"delete  mFirstNoSearchResultInput, null!=search,mFirstNoSearchResultInput.length()="+mFirstNoSearchResultInput.length()+"["+mFirstNoSearchResultInput.toString()+"]"+";searchlen="+keyword.length()+"["+keyword+"]");
 				mFirstNoSearchResultInput.delete(0, mFirstNoSearchResultInput.length());
 			}
 		}
@@ -191,20 +191,20 @@ public class ContactsHelper {
 			
 		    PinyinSearchUnit namePinyinSearchUnit=mBaseContacts.get(i).getNamePinyinSearchUnit();
 			
-			if(true==QwertyUtil.match(namePinyinSearchUnit,search)){//search by name;
+			if(true==QwertyUtil.match(namePinyinSearchUnit,keyword)){//search by name;
 				mBaseContacts.get(i).setSearchByType(SearchByType.SearchByName);
-				mBaseContacts.get(i).setMatchKeywords(namePinyinSearchUnit.getMatchKeyWord().toString());
-				mBaseContacts.get(i).setMatchStartIndex(mBaseContacts.get(i).getName().indexOf(namePinyinSearchUnit.getMatchKeyWord().toString()));
+				mBaseContacts.get(i).setMatchKeywords(namePinyinSearchUnit.getMatchKeyword().toString());
+				mBaseContacts.get(i).setMatchStartIndex(mBaseContacts.get(i).getName().indexOf(namePinyinSearchUnit.getMatchKeyword().toString()));
 				mBaseContacts.get(i).setMatchLength(mBaseContacts.get(i).getMatchKeywords().length());
 				//Log.i(TAG, "["+mBaseContacts.get(i).getName()+"]"+"["+mBaseContacts.get(i).getMatchKeywords().toString()+"]"+"["+mBaseContacts.get(i).getMatchStartIndex()+"]"+"["+mBaseContacts.get(i).getMatchLength()+"]");
 				mSearchContacts.add(mBaseContacts.get(i));
 				continue;
 			}else{
-				if(mBaseContacts.get(i).getPhoneNumber().contains(search)){	//search by phone number
+				if(mBaseContacts.get(i).getPhoneNumber().contains(keyword)){	//search by phone number
 					mBaseContacts.get(i).setSearchByType(SearchByType.SearchByPhoneNumber);
-					mBaseContacts.get(i).setMatchKeywords(search);
-					mBaseContacts.get(i).setMatchStartIndex(mBaseContacts.get(i).getPhoneNumber().indexOf(search));
-					mBaseContacts.get(i).setMatchLength(search.length());
+					mBaseContacts.get(i).setMatchKeywords(keyword);
+					mBaseContacts.get(i).setMatchStartIndex(mBaseContacts.get(i).getPhoneNumber().indexOf(keyword));
+					mBaseContacts.get(i).setMatchLength(keyword.length());
 					//Log.i(TAG, "["+mBaseContacts.get(i).getPhoneNumber()+"]"+"["+mBaseContacts.get(i).getMatchKeywords().toString()+"]"+"["+mBaseContacts.get(i).getMatchStartIndex()+"]"+"["+mBaseContacts.get(i).getMatchLength()+"]");
 					mSearchContacts.add(mBaseContacts.get(i));
 					continue;
@@ -215,8 +215,8 @@ public class ContactsHelper {
 		
 		if(mSearchContacts.size()<=0){
 			if(mFirstNoSearchResultInput.length()<=0){
-				mFirstNoSearchResultInput.append(search);
-				Log.i(TAG,"no search result,null!=search,mFirstNoSearchResultInput.length()="+mFirstNoSearchResultInput.length()+"["+mFirstNoSearchResultInput.toString()+"]"+";searchlen="+search.length()+"["+search+"]");
+				mFirstNoSearchResultInput.append(keyword);
+				Log.i(TAG,"no search result,null!=search,mFirstNoSearchResultInput.length()="+mFirstNoSearchResultInput.length()+"["+mFirstNoSearchResultInput.toString()+"]"+";searchlen="+keyword.length()+"["+keyword+"]");
 			}else{
 				
 			}
@@ -281,7 +281,7 @@ public class ContactsHelper {
 		}
 	}
 	
-	private boolean isSearching() {
+	private boolean isLoading() {
 		return (mLoadTask != null && mLoadTask.getStatus() == Status.RUNNING);
 	}
 
@@ -336,7 +336,7 @@ public class ContactsHelper {
 		}
 
 		if (null != mOnContactsLoad) {
-			parseQwertyInputSearchContacts(null);
+			qwertySearch(null);
 			mOnContactsLoad.onContactsLoadSuccess();
 		}
 

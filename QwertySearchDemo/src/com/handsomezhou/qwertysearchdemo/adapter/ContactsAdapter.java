@@ -36,7 +36,7 @@ public class ContactsAdapter extends ArrayAdapter<Contacts> {
 			view=LayoutInflater.from(mContext).inflate(mTextViewResourceId, null);
 			viewHolder=new ViewHolder();
 			viewHolder.mNameTv=(TextView) view.findViewById(R.id.name_text_view);
-			viewHolder.mPhoneNumber=(TextView) view.findViewById(R.id.phone_number_text_view);
+			viewHolder.mPhoneNumberTv=(TextView) view.findViewById(R.id.phone_number_text_view);
 			view.setTag(viewHolder);
 		}else{
 			view=convertView;
@@ -46,15 +46,15 @@ public class ContactsAdapter extends ArrayAdapter<Contacts> {
 		switch (contact.getSearchByType()) {
 		case SearchByNull:
 			ViewUtil.showTextNormal(viewHolder.mNameTv, contact.getName());
-			ViewUtil.showTextNormal(viewHolder.mPhoneNumber, contact.getPhoneNumber());
+			ViewUtil.showTextNormal(viewHolder.mPhoneNumberTv, contact.getPhoneNumber());
 			break;
 		case SearchByPhoneNumber:
 			ViewUtil.showTextNormal(viewHolder.mNameTv, contact.getName());
-			ViewUtil.showTextHighlight(viewHolder.mPhoneNumber, contact.getPhoneNumber(), contact.getMatchKeywords().toString());
+			ViewUtil.showTextHighlight(viewHolder.mPhoneNumberTv, contact.getPhoneNumber(), contact.getMatchKeywords().toString());
 			break;
 		case SearchByName:
 			ViewUtil.showTextHighlight(viewHolder.mNameTv, contact.getName(), contact.getMatchKeywords().toString());
-			ViewUtil.showTextNormal(viewHolder.mPhoneNumber, contact.getPhoneNumber());
+			ViewUtil.showTextNormal(viewHolder.mPhoneNumberTv, contact.getPhoneNumber());
 			break;
 		default:
 			break;
@@ -64,6 +64,6 @@ public class ContactsAdapter extends ArrayAdapter<Contacts> {
 	
 	private class ViewHolder{
 		TextView mNameTv;
-		TextView mPhoneNumber;
+		TextView mPhoneNumberTv;
 	}
 }

@@ -1,4 +1,4 @@
-package com.handsomezhou.qwertysearchdemo.main;
+package com.handsomezhou.qwertysearchdemo.application;
 
 import android.app.Application;
 import android.content.Context;

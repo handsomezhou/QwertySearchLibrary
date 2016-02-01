@@ -1,7 +1,7 @@
 <resources>
 
     <string name="app_name">QwertySearch</string>
-    <string name="qwerty_keyboard_input_prompt">输入号码或拼音</string>
+    <string name="search_input_prompt">输入号码或拼音</string>
     <string name="no_match_search_result">无相关搜索结果</string>
     <string name="loading_contacts">正在加载联系人</string>
 
